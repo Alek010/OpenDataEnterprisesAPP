@@ -101,13 +101,22 @@ ui <- fluidPage(
                DTOutput("dt_download_log")),
       "About",
       tabPanel(title = "Project", value = "about_project",
-               h2("Open Data Enterprises"),
+              h2("Open Data Enterprises"),
+              br(),
+              h4("Under construction!!!"),
               br(),
               h4("The project is using official open data files from Register of Enterprises."),
               h4("Now project is focused only on Register of Enterprises of the Republc of Latvia (https://data.gov.lv/dati/lv/organization/ur)."),
-              br()
+              br(),
+              h4("Found bugs, need new features or enhancements"),
+              p(" - open issue on GitHub: https://github.com/Alek010/OpenDataEnterprisesAPP/issues"),
+              p("- write via email: opendataenterprisesapp@gmail.com .")),
+      tabPanel(title = "Version", value = "project_version",
+               h3("03.07.2023 - version - 0.1.0."),
+               p("App works ony with 3 files: enterprises under insolvency proceedings, and enterprises shareholders and enterprises joint shareholders.")
+               )
 
-    ))
+    )
 )
 
 # Define server logic required to draw a histogram
