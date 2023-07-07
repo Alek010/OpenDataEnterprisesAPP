@@ -20,28 +20,8 @@ ui <- fluidPage(
       "Register of Enterprises", widths = c(3, 4), selected = "about_project",
       tabPanel(title = "Insolvency legal person proceedings", value = "InsolvencyLegalPersonProceedings",
                tabsetPanel(type = "tabs",
-                           tabPanel("Filters",
-                                    radioButtons("insolvency_filter_radio",
-                                                 label = h3("Filter enterprise under insolvency proceeding"),
-                                                 choices = list("by enterprise registration number" = 1,
-                                                                "by enterprise name" = 2),
-                                                 selected = 1,
-                                                 width = "150%"),
-                                    textInput("insolvency_filter_input_text",
-                                              label = "",
-                                              width = "150%",
-                                              placeholder = "For example 40003608302 or multiple values 40003608302;4000360800"),
-                                    actionButton(inputId = "insolvency_filter_button", label = "Filter"),
-                                    p(),
-                                    h3("Result"),
-                                    tabsetPanel(type = "tabs",
-                                                id = "enterprise_insolvency_filter_result",
-                                                tabPanel("All in One",
-                                                         p(),
-                                                         DTOutput("dt_filtered_InsolvencyLegalPersonProceedings"))
-                                                )
+                           filterResultUI(id = "enterprise_insolvency_filter_result"),
 
-                                    ),
                            tabPanel("Data",
                                     DTOutput("dt_InsolvencyLegalPersonProceedings")
                                     )
@@ -140,62 +120,8 @@ server <- function(input, output, session) {
   filter_input <- reactiveValues(insolvency = character(),
                                  enterprise_owners = character())
 
-  observeEvent(input$insolvency_filter_button,
-               {
-                 enterprises_under_insolvency <- EnterprisesUnderInsolvencyProceeding$new(register$InsolvencyProceedings$dataframe)
-                 enterprises_under_insolvency$process_data()
-
-                 filter_values <- vectorize_input_text(input$insolvency_filter_input_text)
-
-                 filtered_df <- switch (input$insolvency_filter_radio,
-                                        "1" = enterprises_under_insolvency$filter_by_enterprise_registration_number(filter_values),
-                                        "2" = enterprises_under_insolvency$filter_by_enterprise_name(filter_values)
-                 )
-
-                 output$dt_filtered_InsolvencyLegalPersonProceedings <- DT::renderDataTable(filtered_df)
-
-                 if(length(filter_input$insolvency) > 1){
-
-                   values <- filter_input$insolvency
-
-                   for (value in values) {
-
-                     removeTab(inputId = "enterprise_insolvency_filter_result", target = value)
-                   }
-                 }
-
-                 filter_input$insolvency <- filter_values
-
-                 if( length(filter_values) > 1){
-
-                   filtered_df_per_value <- NULL
-
-
-                       for (i in 1:length(filter_values)) {
-
-                       insertTab(inputId = "enterprise_insolvency_filter_result",
-                                 tabPanel(filter_values[i],
-                                          DTOutput(filter_values[[i]])),
-                                 target = "All in One"
-                       )
-
-                         filtered_df_per_value[[i]] <-
-                           switch (input$insolvency_filter_radio,
-                                   "1" = filtered_df %>%
-                                     dplyr::filter(debtor_registration_number == filter_values[i]),
-                                   "2" = filtered_df %>%
-                                     dplyr::filter((debtor_name %>% toupper()) %like% (filter_values[i] %>% toupper()))
-                                   )
-
-                         local({
-                           local_df <- filtered_df_per_value[[i]]
-
-                           output[[filter_values[i]]] <- DT::renderDataTable(local_df)
-                         })
-                       }
-                }
-                 }
-               )
+  filterResultServer(id = "enterprise_insolvency_filter_result",
+                     object_data_frame = EnterprisesUnderInsolvencyProceeding$new(register$InsolvencyProceedings$dataframe))
 
   observeEvent(input$enterprises_owners_filter_button,
                {
