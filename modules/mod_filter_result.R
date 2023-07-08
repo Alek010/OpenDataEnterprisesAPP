@@ -42,9 +42,9 @@ filterResultServer <- function(id, object_data_frame) {
       filter_values <- vectorize_input_text(input$filter_input_text)
 
       filtered_df <- filter_df_based_on_classname(
-        object_instance,
-        input$filter_radio,
-        filter_values
+        r6_object_instance = object_instance,
+        input_id = input$filter_radio,
+        filter_values = filter_values
       )
 
       output$dt <- DT::renderDataTable(filtered_df)
@@ -73,10 +73,10 @@ filterResultServer <- function(id, object_data_frame) {
           )
 
           filtered_df_per_value[[i]] <- filter_df_per_value_based_on_classname(
-            object_instance,
-            input$filter_radio,
-            filtered_df,
-            filter_values[i]
+            r6_object_instance = object_instance,
+            input_id = input$filter_radio,
+            filtered_df = filtered_df,
+            filter_value = filter_values[i]
           )
 
           local({
@@ -95,6 +95,10 @@ filter_df_based_on_classname <- function(r6_object_instance, input_id, filter_va
     "EnterprisesUnderInsolvencyProceeding" = switch(input_id,
       "1" = r6_object_instance$filter_by_enterprise_registration_number(filter_values),
       "2" = r6_object_instance$filter_by_enterprise_name(filter_values)
+    ),
+    "EnterprisesOwners" = switch(input_id,
+      "1" = r6_object_instance$filter_dataframes_by_enterprise_registration_number(filter_values),
+      "2" = r6_object_instance$filter_dataframes_by_name(filter_values)
     )
   )
 
@@ -104,10 +108,12 @@ filter_df_based_on_classname <- function(r6_object_instance, input_id, filter_va
 filter_df_per_value_based_on_classname <- function(r6_object_instance, input_id, filtered_df, filter_value) {
   filtered_df_per_value <- switch(class(r6_object_instance)[1],
     "EnterprisesUnderInsolvencyProceeding" = switch(input_id,
-      "1" = filtered_df %>%
-        dplyr::filter(debtor_registration_number == filter_value),
-      "2" = filtered_df %>%
-        dplyr::filter((debtor_name %>% toupper()) %like% (filter_value %>% toupper()))
+      "1" = filtered_df %>% dplyr::filter(debtor_registration_number == filter_value),
+      "2" = filtered_df %>% dplyr::filter((debtor_name %>% toupper()) %like% (filter_value %>% toupper()))
+    ),
+    "EnterprisesOwners" = switch(input_id,
+      "1" = filtered_df %>% dplyr::filter(at_legal_entity_registration_number == filter_value),
+      "2" = filtered_df %>% dplyr::filter((name %>% toupper()) %like% (filter_value %>% toupper()))
     )
   )
 }
