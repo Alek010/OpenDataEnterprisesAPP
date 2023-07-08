@@ -1,13 +1,30 @@
-filterDataframeTabPanelUI <- function(id) {
+filterDataframeTabPanelUI <- function(id, mainTabPanelValue) {
   ns <- NS(id)
   tabPanel(
     "Filters",
+    # if(mainTabPanelValue == "InsolvencyLegalPersonProceedings"){
+    #   radioButtons(ns("filter_radio"),
+    #                label = h3("Filter enterprise under insolvency proceeding"),
+    #                choices = list(
+    #                  "by enterprise registration number" = 1,
+    #                  "by enterprise name" = 2
+    #                ),
+    #                selected = 1,
+    #                width = "150%"
+    #   )
+    # }else if(mainTabPanelValue == "EnterprisesOwners"){
+    #   radioButtons(ns("filter_radio"),
+    #                label = h3("Filter enterprise owners"),
+    #                choices = list(
+    #                  "by enterprise registration number" = 1,
+    #                  "by enterprise owner name" = 2
+    #                ),
+    #                selected = 1,
+    #                width = "150%")
+    # },
     radioButtons(ns("filter_radio"),
-      label = h3("Filter enterprise under insolvency proceeding"),
-      choices = list(
-        "by enterprise registration number" = 1,
-        "by enterprise name" = 2
-      ),
+      label = h3(getFilterDataFrameRadioButtonLabel(mainTabPanelValue)),
+      choices = getFilterDataFrameRadioButtonChoises(mainTabPanelValue),
       selected = 1,
       width = "150%"
     ),
@@ -29,6 +46,29 @@ filterDataframeTabPanelUI <- function(id) {
       )
     )
   )
+}
+
+getFilterDataFrameRadioButtonLabel = function(mainTabPanelValue){
+  label <- switch (mainTabPanelValue,
+    "InsolvencyLegalPersonProceedings" = "Filter enterprise under insolvency proceeding",
+    "EnterprisesOwners" = "Filter enterprise owners"
+  )
+  return(label)
+}
+
+getFilterDataFrameRadioButtonChoises = function(mainTabPanelValue){
+  choises_list <- switch (mainTabPanelValue,
+                         "InsolvencyLegalPersonProceedings" = list(
+                                            "by enterprise registration number" = 1,
+                                            "by enterprise name" = 2
+                                          ),
+                         "EnterprisesOwners" = list(
+                                            "by enterprise registration number" = 1,
+                                            "by enterprise owner name" = 2
+                                          )
+
+  )
+  return(choises_list)
 }
 
 filterDataframeTabPanelServer <- function(id, object_data_frame) {
