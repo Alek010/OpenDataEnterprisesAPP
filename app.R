@@ -22,7 +22,7 @@ ui <- fluidPage(
       title = "Insolvency legal person proceedings", value = "InsolvencyLegalPersonProceedings",
       tabsetPanel(
         type = "tabs",
-        filterDataframeTabPanelUI(id = "enterprise_insolvency_filter_result", mainTabPanelValue = "InsolvencyLegalPersonProceedings"),
+        filterDataframeTabPanelUI(id = "enterprise_insolvency_filter", mainTabPanelValue = "InsolvencyLegalPersonProceedings"),
         tabPanel(
           "Data",
           DTOutput("dt_InsolvencyLegalPersonProceedings")
@@ -105,7 +105,7 @@ server <- function(input, output, session) {
   output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
 
   filterDataframeTabPanelServer(
-    id = "enterprise_insolvency_filter_result",
+    id = "enterprise_insolvency_filter",
     object_data_frame = EnterprisesUnderInsolvencyProceeding$new(register$InsolvencyProceedings$dataframe)
   )
 
