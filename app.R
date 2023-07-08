@@ -22,7 +22,7 @@ ui <- fluidPage(
       title = "Insolvency legal person proceedings", value = "InsolvencyLegalPersonProceedings",
       tabsetPanel(
         type = "tabs",
-        filterDataframeTabPanelUI(id = "enterprise_insolvency_filter_result"),
+        filterDataframeTabPanelUI(id = "enterprise_insolvency_filter_result", mainTabPanelValue = "InsolvencyLegalPersonProceedings"),
         tabPanel(
           "Data",
           DTOutput("dt_InsolvencyLegalPersonProceedings")
@@ -33,7 +33,7 @@ ui <- fluidPage(
       title = "Enterprises owners", value = "EnterprisesOwners",
       tabsetPanel(
         type = "tabs",
-        filterDataframeTabPanelUI(id = "enterprises_owners_filter"),
+        filterDataframeTabPanelUI(id = "enterprises_owners_filter", mainTabPanelValue = "EnterprisesOwners"),
         tabPanel(
           "Data",
           h2("Enterprises shareholders"),
