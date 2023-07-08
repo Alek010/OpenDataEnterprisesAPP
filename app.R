@@ -22,11 +22,11 @@ ui <- fluidPage(
       title = "Insolvency legal person proceedings", value = "InsolvencyLegalPersonProceedings",
       tabsetPanel(
         type = "tabs",
-        filterDataframeTabPanelUI(id = "enterprise_insolvency_filter", mainTabPanelValue = "InsolvencyLegalPersonProceedings"),
-        tabPanel(
-          "Data",
-          DTOutput("dt_InsolvencyLegalPersonProceedings")
-        )
+        filterDataframeTabPanelUI(
+          id = "enterprise_insolvency_filter",
+          mainTabPanelValue = "InsolvencyLegalPersonProceedings"
+        ),
+        dataSourceTabPanelUI(id = "enterprise_insolvency_datasource")
       )
     ),
     tabPanel(
@@ -95,7 +95,11 @@ server <- function(input, output, session) {
   register <- RegisterOfEnterprisesOfLatvia$new(download_folder = "./data")
   register$read_files()
 
-  output$dt_InsolvencyLegalPersonProceedings <- DT::renderDT(register$InsolvencyProceedings$dataframe)
+  dataSourceTabPanelServer(
+    id = "enterprise_insolvency_datasource",
+    dataframe = register$InsolvencyProceedings$dataframe
+  )
+
 
   output$dt_LlcShareholders <- DT::renderDataTable(register$LlcShareholders$dataframe)
   output$dt_LlcShareholderJointOwners <- DT::renderDT(register$LlcShareholderJointOwners$dataframe)
