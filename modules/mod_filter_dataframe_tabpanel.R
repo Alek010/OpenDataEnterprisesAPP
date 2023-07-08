@@ -115,5 +115,5 @@ filter_df_per_value_based_on_classname <- function(r6_object_instance, input_id,
       "2" = filtered_df %>% dplyr::filter((name %>% toupper()) %like% (filter_value %>% toupper()))
     )
   )
-  return(filtered_df)
+  return(filtered_df_per_value)
 }
