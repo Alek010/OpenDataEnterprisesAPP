@@ -1,4 +1,4 @@
-filterResultUI <- function(id) {
+filterDataframeTabPanelUI <- function(id) {
   ns <- NS(id)
   tabPanel(
     "Filters",
@@ -31,7 +31,7 @@ filterResultUI <- function(id) {
   )
 }
 
-filterResultServer <- function(id, object_data_frame) {
+filterDataframeTabPanelServer <- function(id, object_data_frame) {
   moduleServer(id, function(input, output, session) {
     filter_input_values <- reactiveVal(character(0))
 
