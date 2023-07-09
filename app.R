@@ -4,7 +4,7 @@ source(file = "./global.R", local = TRUE)
 ui <- fluidPage(
   add_busy_bar(color = "#FF0000"),
 
-  titlePanel("OpenData Enterprises"),
+  titlePanel(paste("OpenData Enterprises", APP_VERSION)),
   navlistPanel(
     "Register of Enterprises",
     widths = c(3, 4), selected = "about_project",
