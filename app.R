@@ -26,7 +26,8 @@ ui <- fluidPage(
           id = "enterprise_insolvency_filter",
           mainTabPanelValue = "InsolvencyLegalPersonProceedings"
         ),
-        dataSourceTabPanelUI(id = "enterprise_insolvency_datasource")
+        dataSourceTabPanelUI(id = "InsolvencyLegalPersonProceedings",
+                             mainTabPanelValue = "InsolvencyLegalPersonProceedings")
       )
     ),
     tabPanel(
@@ -34,19 +35,8 @@ ui <- fluidPage(
       tabsetPanel(
         type = "tabs",
         filterDataframeTabPanelUI(id = "enterprises_owners_filter", mainTabPanelValue = "EnterprisesOwners"),
-        tabPanel(
-          "Data",
-          h2("Enterprises shareholders"),
-          br(),
-          p("Data includes full and joint sharholders of enterprises. "),
-          p("If entity_type column is JOINT_OWNERS, means that under one record could be two o more owners of share."),
-          p("JOINT OWNERS could be matched by using id column with member_id column of next table."),
-          DTOutput("dt_LlcShareholders"),
-          p(),
-          h2("Enterprises only joint owners"),
-          p(),
-          DTOutput("dt_LlcShareholderJointOwners")
-        )
+        dataSourceTabPanelUI(id = "EnterprisesOwners",
+                             mainTabPanelValue = "EnterprisesOwners")
       )
     ),
     "Admin",
@@ -95,14 +85,9 @@ server <- function(input, output, session) {
   register <- RegisterOfEnterprisesOfLatvia$new(download_folder = "./data")
   register$read_files()
 
-  dataSourceTabPanelServer(
-    id = "enterprise_insolvency_datasource",
-    dataframe = register$InsolvencyProceedings$dataframe
-  )
+  dataSourceTabPanelServer(id = "InsolvencyLegalPersonProceedings", r6_object = register)
+  dataSourceTabPanelServer(id = "EnterprisesOwners", r6_object = register)
 
-
-  output$dt_LlcShareholders <- DT::renderDataTable(register$LlcShareholders$dataframe)
-  output$dt_LlcShareholderJointOwners <- DT::renderDT(register$LlcShareholderJointOwners$dataframe)
 
   output$dt_read_log <- DT::renderDT(register$get_read_log_summary())
 
