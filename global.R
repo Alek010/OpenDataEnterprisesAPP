@@ -15,3 +15,4 @@ library(stringr)
 source(file = "./helpers/vectorize_input_text.R")
 
 source(file = "./modules/mod_filter_dataframe_tabpanel.R")
+source(file = "./modules/mod_data_source_tabpanel.R")
