@@ -1,19 +1,9 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 
 source(file = "./global.R", local = TRUE)
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
   add_busy_bar(color = "#FF0000"),
 
-  # Application title
   titlePanel("OpenData Enterprises"),
   navlistPanel(
     "Register of Enterprises",
@@ -22,17 +12,16 @@ ui <- fluidPage(
       title = "Insolvency legal person proceedings", value = "InsolvencyLegalPersonProceedings",
       tabsetPanel(
         type = "tabs",
-        filterDataframeTabPanelUI(id = "enterprise_insolvency_filter", mainTabPanelValue = "InsolvencyLegalPersonProceedings"),
-        dataSourceTabPanelUI(id = "InsolvencyLegalPersonProceedings", mainTabPanelValue = "InsolvencyLegalPersonProceedings"
-        )
+        filterDataframeTabPanelUI(id = "InsolvencyLegalPersonProceedingsFilter", mainTabPanelValue = "InsolvencyLegalPersonProceedings"),
+        dataSourceTabPanelUI(id = "InsolvencyLegalPersonProceedingsData", mainTabPanelValue = "InsolvencyLegalPersonProceedings")
       )
     ),
     tabPanel(
       title = "Enterprises owners", value = "EnterprisesOwners",
       tabsetPanel(
         type = "tabs",
-        filterDataframeTabPanelUI(id = "enterprises_owners_filter", mainTabPanelValue = "EnterprisesOwners"),
-        dataSourceTabPanelUI(id = "EnterprisesOwners", mainTabPanelValue = "EnterprisesOwners")
+        filterDataframeTabPanelUI(id = "EnterprisesOwnersFilter", mainTabPanelValue = "EnterprisesOwners"),
+        dataSourceTabPanelUI(id = "EnterprisesOwnersData", mainTabPanelValue = "EnterprisesOwners")
       )
     ),
     "Admin",
@@ -72,7 +61,7 @@ ui <- fluidPage(
   )
 )
 
-# Define server logic required to draw a histogram
+
 server <- function(input, output, session) {
   session$onSessionEnded(function() {
     stopApp()
@@ -81,26 +70,35 @@ server <- function(input, output, session) {
   register <- RegisterOfEnterprisesOfLatvia$new(download_folder = "./data")
   register$read_files()
 
-  dataSourceTabPanelServer(id = "InsolvencyLegalPersonProceedings", r6_object = register)
-  dataSourceTabPanelServer(id = "EnterprisesOwners", r6_object = register)
-
-
-  output$dt_read_log <- DT::renderDT(register$get_read_log_summary())
-
-  output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
+  dataSourceTabPanelServer(
+    id = "InsolvencyLegalPersonProceedingsData",
+    dataframes = list(register$InsolvencyProceedings$dataframe)
+  )
+  dataSourceTabPanelServer(
+    id = "EnterprisesOwnersData",
+    dataframes = list(
+      register$LlcShareholders$dataframe,
+      register$LlcShareholderJointOwners$dataframe
+    )
+  )
 
   filterDataframeTabPanelServer(
-    id = "enterprise_insolvency_filter",
+    id = "InsolvencyLegalPersonProceedingsFilter",
     object_data_frame = EnterprisesUnderInsolvencyProceeding$new(register$InsolvencyProceedings$dataframe)
   )
 
   filterDataframeTabPanelServer(
-    id = "enterprises_owners_filter",
+    id = "EnterprisesOwnersFilter",
     object_data_frame = EnterprisesOwners$new(
       df_llc_shareholders = register$LlcShareholders$dataframe,
       df_llc_joint_shareholders = register$LlcShareholderJointOwners$dataframe
     )
   )
+
+
+  output$dt_read_log <- DT::renderDT(register$get_read_log_summary())
+
+  output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
 
 
   observeEvent(input$update_files, {

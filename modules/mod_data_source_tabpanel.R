@@ -3,11 +3,9 @@ dataSourceTabPanelUI <- function(id, mainTabPanelValue) {
   getDataSourceTabPanelUIoutputs(NS(id), mainTabPanelValue)
 }
 
-dataSourceTabPanelServer <- function(id, r6_object) {
-  class_name <- id
+dataSourceTabPanelServer <- function(id, dataframes) {
 
   moduleServer(id, function(input, output, session) {
-    dataframes <- getDataFrameTabPanelServerBasedOnClassname(class_name, r6_object)
 
     for (i in 1:length(dataframes)) {
       output[[paste0("dt", i)]] <- DT::renderDT(dataframes[[i]])
@@ -38,13 +36,4 @@ getDataSourceTabPanelUIoutputs <- function(namespace, mainTabPanelValue) {
       DTOutput(ns("dt2"))
     )
   )
-}
-
-getDataFrameTabPanelServerBasedOnClassname <- function(class_name, r6_object) {
-  dataframes <- switch(class_name,
-    "InsolvencyLegalPersonProceedings" = list(r6_object$InsolvencyProceedings$dataframe),
-    "EnterprisesOwners" = list(r6_object$LlcShareholders$dataframe, r6_object$LlcShareholderJointOwners$dataframe)
-  )
-
-  return(dataframes)
 }
