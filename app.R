@@ -25,11 +25,7 @@ ui <- fluidPage(
       )
     ),
     "Admin",
-    tabPanel(
-      title = "Logs", value = "read_log",
-      h2("Files read log"),
-      DTOutput("dt_read_log")
-    ),
+    adminFilesReadLogTabPanelUI(id = "filesReadLog"),
     tabPanel(
       title = "Update files", value = "update_files",
       h2("Update files"),
@@ -95,8 +91,8 @@ server <- function(input, output, session) {
     )
   )
 
+  adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = register$get_read_log_summary())
 
-  output$dt_read_log <- DT::renderDT(register$get_read_log_summary())
 
   output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
 
