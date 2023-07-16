@@ -66,35 +66,38 @@ server <- function(input, output, session) {
   register <- RegisterOfEnterprisesOfLatvia$new(download_folder = "./data")
   register$read_files()
 
+  data <- reactiveValues(
+    files_read_log = register$get_read_log_summary(),
+    files_download_log = register$get_download_log_summary(),
+    InsolvencyProceedings = register$InsolvencyProceedings$dataframe,
+    LlcShareholders = register$LlcShareholders$dataframe,
+    LlcShareholderJointOwners = register$LlcShareholderJointOwners$dataframe
+  )
+
   dataSourceTabPanelServer(
     id = "InsolvencyLegalPersonProceedingsData",
-    dataframes = list(register$InsolvencyProceedings$dataframe)
+    dataframes = isolate(list(data$InsolvencyProceedings))
   )
   dataSourceTabPanelServer(
     id = "EnterprisesOwnersData",
-    dataframes = list(
-      register$LlcShareholders$dataframe,
-      register$LlcShareholderJointOwners$dataframe
-    )
+    dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
   )
 
   filterDataframeTabPanelServer(
     id = "InsolvencyLegalPersonProceedingsFilter",
-    object_data_frame = EnterprisesUnderInsolvencyProceeding$new(register$InsolvencyProceedings$dataframe)
+    object_data_frame = isolate(EnterprisesUnderInsolvencyProceeding$new(data$InsolvencyProceedings))
   )
 
   filterDataframeTabPanelServer(
     id = "EnterprisesOwnersFilter",
-    object_data_frame = EnterprisesOwners$new(
-      df_llc_shareholders = register$LlcShareholders$dataframe,
-      df_llc_joint_shareholders = register$LlcShareholderJointOwners$dataframe
-    )
+    object_data_frame = isolate(EnterprisesOwners$new(df_llc_shareholders = data$LlcShareholders,
+                                              df_llc_joint_shareholders = data$LlcShareholderJointOwners))
   )
 
-  adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = register$get_read_log_summary())
+  adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = isolate(data$files_read_log))
 
 
-  output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
+  output$dt_download_log <- DT::renderDT(isolate(data$files_download_log))
 
 
   observeEvent(input$update_files, {
