@@ -101,9 +101,10 @@ server <- function(input, output, session) {
 
 
   observeEvent(input$update_files, {
+
     # TODO Disable button ----
     # implement shinyjs enable disable button if files are up to date instead of validate.
-    files_creation_dates <- register$get_read_log_summary() %>%
+    files_creation_dates <- data$files_read_log %>%
       dplyr::select(file_created) %>%
       unique() %>%
       dplyr::filter(!is.na(file_created))
@@ -129,14 +130,27 @@ server <- function(input, output, session) {
     register$download_files()
     register$read_files()
 
-    output$dt_InsolvencyLegalPersonProceedings <- DT::renderDT(register$InsolvencyProceedings$dataframe)
+    data$InsolvencyProceedings <- register$InsolvencyProceedings$dataframe
+    data$LlcShareholders <- register$LlcShareholders$dataframe
+    data$LlcShareholderJointOwners <- register$LlcShareholderJointOwners$dataframe
+    data$files_read_log <- register$get_read_log_summary()
+    data$files_download_log <- register$get_download_log_summary()
 
-    output$dt_LlcShareholders <- DT::renderDataTable(register$LlcShareholders$dataframe)
-    output$dt_LlcShareholderJointOwners <- DT::renderDT(register$LlcShareholderJointOwners$dataframe)
+    dataSourceTabPanelServer(
+      id = "InsolvencyLegalPersonProceedingsData",
+      dataframes = isolate(list(data$InsolvencyProceedings))
+    )
 
-    output$dt_read_log <- DT::renderDT(register$get_read_log_summary())
+    dataSourceTabPanelServer(
+      id = "EnterprisesOwnersData",
+      dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
+    )
 
-    output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
+    adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = isolate(data$files_read_log))
+
+
+    output$dt_download_log <- DT::renderDT(isolate(data$files_download_log))
+
   })
 }
 
