@@ -26,15 +26,8 @@ ui <- fluidPage(
     ),
     "Admin",
     adminFilesReadLogTabPanelUI(id = "filesReadLog"),
-    tabPanel(
-      title = "Update files", value = "update_files",
-      h2("Update files"),
-      p("Press button update in order to download newest files."),
-      actionButton(inputId = "update_files", label = "Update files"),
-      textOutput(outputId = "files_update_status"),
-      h2("Files download log"),
-      DTOutput("dt_download_log")
-    ),
+    adminFilesUpdateTabPanelUI(id = "filesUpdate"),
+
     "About",
     tabPanel(
       title = "Project", value = "about_project",
@@ -66,75 +59,45 @@ server <- function(input, output, session) {
   register <- RegisterOfEnterprisesOfLatvia$new(download_folder = "./data")
   register$read_files()
 
-  dataSourceTabPanelServer(
-    id = "InsolvencyLegalPersonProceedingsData",
-    dataframes = list(register$InsolvencyProceedings$dataframe)
+  data <- reactiveValues(
+    files_read_log = register$get_read_log_summary(),
+    files_download_log = register$get_download_log_summary(),
+    InsolvencyProceedings = register$InsolvencyProceedings$dataframe,
+    LlcShareholders = register$LlcShareholders$dataframe,
+    LlcShareholderJointOwners = register$LlcShareholderJointOwners$dataframe
   )
-  dataSourceTabPanelServer(
-    id = "EnterprisesOwnersData",
-    dataframes = list(
-      register$LlcShareholders$dataframe,
-      register$LlcShareholderJointOwners$dataframe
+
+  observeEvent({data$InsolvencyProceedings},
+    dataSourceTabPanelServer(
+      id = "InsolvencyLegalPersonProceedingsData",
+      dataframes = isolate(list(data$InsolvencyProceedings))
+    )
+  )
+
+  observeEvent({data$LlcShareholders; data$LlcShareholderJointOwners},
+    dataSourceTabPanelServer(
+      id = "EnterprisesOwnersData",
+      dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
     )
   )
 
   filterDataframeTabPanelServer(
     id = "InsolvencyLegalPersonProceedingsFilter",
-    object_data_frame = EnterprisesUnderInsolvencyProceeding$new(register$InsolvencyProceedings$dataframe)
+    object_data_frame = isolate(EnterprisesUnderInsolvencyProceeding$new(data$InsolvencyProceedings))
   )
 
   filterDataframeTabPanelServer(
     id = "EnterprisesOwnersFilter",
-    object_data_frame = EnterprisesOwners$new(
-      df_llc_shareholders = register$LlcShareholders$dataframe,
-      df_llc_joint_shareholders = register$LlcShareholderJointOwners$dataframe
-    )
+    object_data_frame = isolate(EnterprisesOwners$new(df_llc_shareholders = data$LlcShareholders,
+                                              df_llc_joint_shareholders = data$LlcShareholderJointOwners))
   )
 
-  adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = register$get_read_log_summary())
+  observeEvent({data$files_read_log},
+    adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = isolate(data$files_read_log))
+  )
 
+  adminFilesUpdateTabPanelServer(id = "filesUpdate", register = register, data = data)
 
-  output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
-
-
-  observeEvent(input$update_files, {
-    # TODO Disable button ----
-    # implement shinyjs enable disable button if files are up to date instead of validate.
-    files_creation_dates <- register$get_read_log_summary() %>%
-      dplyr::select(file_created) %>%
-      unique() %>%
-      dplyr::filter(!is.na(file_created))
-
-    FileOrFilesAreNotUpToDate <- TRUE
-
-    if (length(files_creation_dates$file_created) != 0) {
-      for (date in files_creation_dates$file_created) {
-        if (date == Sys.Date()) {
-          FileOrFilesAreNotUpToDate <- FALSE
-          break
-        }
-      }
-    }
-
-    output$files_update_status <- renderText({
-      validate(need(FileOrFilesAreNotUpToDate, message = "Files are up to date!!!"))
-    })
-    validate(need(FileOrFilesAreNotUpToDate, message = "Files are up to date!!!"))
-    # TODO END ----
-    #----
-    register$processed_files <- NULL
-    register$download_files()
-    register$read_files()
-
-    output$dt_InsolvencyLegalPersonProceedings <- DT::renderDT(register$InsolvencyProceedings$dataframe)
-
-    output$dt_LlcShareholders <- DT::renderDataTable(register$LlcShareholders$dataframe)
-    output$dt_LlcShareholderJointOwners <- DT::renderDT(register$LlcShareholderJointOwners$dataframe)
-
-    output$dt_read_log <- DT::renderDT(register$get_read_log_summary())
-
-    output$dt_download_log <- DT::renderDT(register$get_download_log_summary())
-  })
 }
 
 # Run the application

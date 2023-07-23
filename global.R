@@ -17,5 +17,6 @@ source(file = "./helpers/vectorize_input_text.R")
 source(file = "./modules/mod_filter_dataframe_tabpanel.R")
 source(file = "./modules/mod_data_source_tabpanel.R")
 source(file = "./modules/mod_admin_files_read_log.R")
+source(file = "./modules/mod_admin_files_update.R")
 
 APP_VERSION <- "0.1.0"
