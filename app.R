@@ -26,15 +26,8 @@ ui <- fluidPage(
     ),
     "Admin",
     adminFilesReadLogTabPanelUI(id = "filesReadLog"),
-    tabPanel(
-      title = "Update files", value = "update_files",
-      h2("Update files"),
-      p("Press button update in order to download newest files."),
-      actionButton(inputId = "update_files", label = "Update files"),
-      textOutput(outputId = "files_update_status"),
-      h2("Files download log"),
-      DTOutput("dt_download_log")
-    ),
+    adminFilesUpdateTabPanelUI(id = "filesUpdate"),
+
     "About",
     tabPanel(
       title = "Project", value = "about_project",
@@ -74,13 +67,18 @@ server <- function(input, output, session) {
     LlcShareholderJointOwners = register$LlcShareholderJointOwners$dataframe
   )
 
-  dataSourceTabPanelServer(
-    id = "InsolvencyLegalPersonProceedingsData",
-    dataframes = isolate(list(data$InsolvencyProceedings))
+  observeEvent({data$InsolvencyProceedings},
+    dataSourceTabPanelServer(
+      id = "InsolvencyLegalPersonProceedingsData",
+      dataframes = isolate(list(data$InsolvencyProceedings))
+    )
   )
-  dataSourceTabPanelServer(
-    id = "EnterprisesOwnersData",
-    dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
+
+  observeEvent({data$LlcShareholders; data$LlcShareholderJointOwners},
+    dataSourceTabPanelServer(
+      id = "EnterprisesOwnersData",
+      dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
+    )
   )
 
   filterDataframeTabPanelServer(
@@ -94,64 +92,12 @@ server <- function(input, output, session) {
                                               df_llc_joint_shareholders = data$LlcShareholderJointOwners))
   )
 
-  adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = isolate(data$files_read_log))
-
-
-  output$dt_download_log <- DT::renderDT(isolate(data$files_download_log))
-
-
-  observeEvent(input$update_files, {
-
-    # TODO Disable button ----
-    # implement shinyjs enable disable button if files are up to date instead of validate.
-    files_creation_dates <- data$files_read_log %>%
-      dplyr::select(file_created) %>%
-      unique() %>%
-      dplyr::filter(!is.na(file_created))
-
-    FileOrFilesAreNotUpToDate <- TRUE
-
-    if (length(files_creation_dates$file_created) != 0) {
-      for (date in files_creation_dates$file_created) {
-        if (date == Sys.Date()) {
-          FileOrFilesAreNotUpToDate <- FALSE
-          break
-        }
-      }
-    }
-
-    output$files_update_status <- renderText({
-      validate(need(FileOrFilesAreNotUpToDate, message = "Files are up to date!!!"))
-    })
-    validate(need(FileOrFilesAreNotUpToDate, message = "Files are up to date!!!"))
-    # TODO END ----
-    #----
-    register$processed_files <- NULL
-    register$download_files()
-    register$read_files()
-
-    data$InsolvencyProceedings <- register$InsolvencyProceedings$dataframe
-    data$LlcShareholders <- register$LlcShareholders$dataframe
-    data$LlcShareholderJointOwners <- register$LlcShareholderJointOwners$dataframe
-    data$files_read_log <- register$get_read_log_summary()
-    data$files_download_log <- register$get_download_log_summary()
-
-    dataSourceTabPanelServer(
-      id = "InsolvencyLegalPersonProceedingsData",
-      dataframes = isolate(list(data$InsolvencyProceedings))
-    )
-
-    dataSourceTabPanelServer(
-      id = "EnterprisesOwnersData",
-      dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
-    )
-
+  observeEvent({data$files_read_log},
     adminFilesReadLogTabPanelServer(id = "filesReadLog", df_read_log_summary = isolate(data$files_read_log))
+  )
 
+  adminFilesUpdateTabPanelServer(id = "filesUpdate", register = register, data = data)
 
-    output$dt_download_log <- DT::renderDT(isolate(data$files_download_log))
-
-  })
 }
 
 # Run the application
