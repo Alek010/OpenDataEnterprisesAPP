@@ -42,7 +42,7 @@ ui <- fluidPage(
       p(" - open issue on GitHub: https://github.com/Alek010/OpenDataEnterprisesAPP/issues"),
       p("- write via email: opendataenterprisesapp@gmail.com .")
     ),
-    aboutVersioningTabPanelUI(id = "appVersions")
+    aboutVersioningTabPanelUI(id = "appVersions", latest_app_version = APP_VERSION)
   )
 )
 
@@ -93,6 +93,8 @@ server <- function(input, output, session) {
   )
 
   adminFilesUpdateTabPanelServer(id = "filesUpdate", register = register, data = data)
+
+  aboutVersioningTabPanelServer(id = "appVersions")
 
 }
 
