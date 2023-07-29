@@ -94,7 +94,8 @@ server <- function(input, output, session) {
 
   adminFilesUpdateTabPanelServer(id = "filesUpdate", register = register, data = data)
 
-  aboutVersioningTabPanelServer(id = "appVersions")
+  appVersion <- AppVersionsDataFrame$new()
+  aboutVersioningTabPanelServer(id = "appVersions", df_app_versions = appVersion$get_df())
 
 }
 

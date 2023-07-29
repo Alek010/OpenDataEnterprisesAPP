@@ -9,16 +9,16 @@ aboutVersioningTabPanelUI <- function(id, latest_app_version) {
   )
 }
 
-aboutVersioningTabPanelServer <- function(id) {
+aboutVersioningTabPanelServer <- function(id, df_app_versions) {
   moduleServer(id, function(input, output, session) {
-    output$dt <- DT::renderDT(datatable(data.frame(Date = as.Date("2023-07-03"),
-                                                            Version = "0.1.0",
-                                                            Description = "<ol>App works ony with 3 files:<br/>
-                                                   <li>enterprises under insolvency proceedings;</li>
-                                                   <li>enterprises shareholders;</li>
-                                                   <li>enterprises joint shareholders.</li>
-                                                   </ol>"),
+
+    output$dt <- DT::renderDT(DT::datatable(df_app_versions,
                                         rownames = FALSE,
                                         escape = FALSE))
   })
 }
+
+
+
+
+
