@@ -42,11 +42,7 @@ ui <- fluidPage(
       p(" - open issue on GitHub: https://github.com/Alek010/OpenDataEnterprisesAPP/issues"),
       p("- write via email: opendataenterprisesapp@gmail.com .")
     ),
-    tabPanel(
-      title = "Version", value = "project_version",
-      h3("03.07.2023 - version - 0.1.0."),
-      p("App works ony with 3 files: enterprises under insolvency proceedings, and enterprises shareholders and enterprises joint shareholders.")
-    )
+    aboutVersioningTabPanelUI(id = "appVersions", latest_app_version = APP_VERSION)
   )
 )
 
@@ -97,6 +93,9 @@ server <- function(input, output, session) {
   )
 
   adminFilesUpdateTabPanelServer(id = "filesUpdate", register = register, data = data)
+
+  appVersion <- AppVersionsDataFrame$new()
+  aboutVersioningTabPanelServer(id = "appVersions", df_app_versions = appVersion$get_df())
 
 }
 
