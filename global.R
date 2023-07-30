@@ -21,6 +21,7 @@ source(file = "./modules/mod_data_source_tabpanel.R")
 source(file = "./modules/mod_admin_files_read_log.R")
 source(file = "./modules/mod_admin_files_update.R")
 source(file = "./modules/mod_about_versioning.R")
+source(file = "./modules/mod_about_project.R")
 
 source(file = "./r6_classes/AppVersionsList.R", encoding = "UTF-8")
 source(file = "./r6_classes/AppVersionsDataFrame.R")
