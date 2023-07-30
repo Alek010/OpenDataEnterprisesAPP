@@ -2,7 +2,7 @@ aboutProjectTabPanelUI <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    title = "Project", value = "about_project",
+    title = "Project", value = id,
     h2("Open Data Enterprises"),
     br(),
     h4("Under construction!!!"),

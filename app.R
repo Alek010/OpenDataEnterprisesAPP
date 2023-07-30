@@ -7,7 +7,7 @@ ui <- fluidPage(
   titlePanel(paste("OpenData Enterprises", APP_VERSION)),
   navlistPanel(
     "Register of Enterprises",
-    widths = c(3, 4), selected = "about_project",
+    widths = c(3, 4), selected = "aboutProject",
     tabPanel(
       title = "Insolvency legal person proceedings", value = "InsolvencyLegalPersonProceedings",
       tabsetPanel(
