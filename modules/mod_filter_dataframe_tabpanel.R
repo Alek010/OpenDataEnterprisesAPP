@@ -38,6 +38,10 @@ filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide
 
       filter_values <- vectorize_input_text(input$filter_input_text)
 
+      if (identical(filter_values, character(0))) {
+        columns_to_hide <- NULL
+      }
+
       filtered_df <- filter_df_based_on_classname(
         r6_object_instance = object_instance,
         input_id = input$filter_radio,
