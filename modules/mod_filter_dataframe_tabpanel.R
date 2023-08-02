@@ -46,13 +46,14 @@ filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide
 
       output$dt <- DT::renderDataTable(
         DT::datatable(filtered_df,
-                      rownames = FALSE,
-                      extensions = 'Buttons',
-                      options = list(
-                        dom = 'Bfrtip',
-                        buttons = I('colvis'),
-                        columnDefs = list(list(visible=FALSE, targets=columns_to_hide))
-                      ))
+          rownames = FALSE,
+          extensions = "Buttons",
+          options = list(
+            dom = "Bfrtip",
+            buttons = I("colvis"),
+            columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
+          )
+        )
       )
 
       if (length(filter_input_values()) > 1) {
@@ -90,14 +91,14 @@ filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide
 
             output[[filter_values[i]]] <- DT::renderDataTable(
               DT::datatable(local_df,
-                            rownames = FALSE,
-                            extensions = 'Buttons',
-                            options = list(
-                              dom = 'Bfrtip',
-                              buttons = I('colvis'),
-                              columnDefs = list(list(visible=FALSE, targets=columns_to_hide))
-                            )
-                            )
+                rownames = FALSE,
+                extensions = "Buttons",
+                options = list(
+                  dom = "Bfrtip",
+                  buttons = I("colvis"),
+                  columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
+                )
+              )
             )
           })
         }
@@ -106,25 +107,24 @@ filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide
   })
 }
 
-getFilterDataFrameRadioButtonLabel = function(mainTabPanelValue){
-  label <- switch (mainTabPanelValue,
-                   "InsolvencyLegalPersonProceedings" = "Filter enterprise under insolvency proceeding",
-                   "EnterprisesOwners" = "Filter enterprise owners"
+getFilterDataFrameRadioButtonLabel <- function(mainTabPanelValue) {
+  label <- switch(mainTabPanelValue,
+    "InsolvencyLegalPersonProceedings" = "Filter enterprise under insolvency proceeding",
+    "EnterprisesOwners" = "Filter enterprise owners"
   )
   return(label)
 }
 
-getFilterDataFrameRadioButtonChoises = function(mainTabPanelValue){
-  choises_list <- switch (mainTabPanelValue,
-                          "InsolvencyLegalPersonProceedings" = list(
-                            "by enterprise registration number" = 1,
-                            "by enterprise name" = 2
-                          ),
-                          "EnterprisesOwners" = list(
-                            "by enterprise registration number" = 1,
-                            "by enterprise owner name" = 2
-                          )
-
+getFilterDataFrameRadioButtonChoises <- function(mainTabPanelValue) {
+  choises_list <- switch(mainTabPanelValue,
+    "InsolvencyLegalPersonProceedings" = list(
+      "by enterprise registration number" = 1,
+      "by enterprise name" = 2
+    ),
+    "EnterprisesOwners" = list(
+      "by enterprise registration number" = 1,
+      "by enterprise owner name" = 2
+    )
   )
   return(choises_list)
 }

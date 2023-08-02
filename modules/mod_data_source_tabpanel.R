@@ -1,23 +1,19 @@
 dataSourceTabPanelUI <- function(id, mainTabPanelValue) {
-
   getDataSourceTabPanelUIoutputs(NS(id), mainTabPanelValue)
 }
 
 dataSourceTabPanelServer <- function(id, dataframes, columns_to_hide = NULL) {
-
   moduleServer(id, function(input, output, session) {
-
     for (i in 1:length(dataframes)) {
       output[[paste0("dt", i)]] <- DT::renderDT(DT::datatable(dataframes[[i]],
-                                                              rownames = FALSE,
-                                                              extensions = 'Buttons',
-                                                              options = list(
-                                                                dom = 'Bfrtip',
-                                                                buttons = I('colvis'),
-                                                                columnDefs = list(list(visible=FALSE, targets=columns_to_hide))
-                                                                )
-      )
-      )
+        rownames = FALSE,
+        extensions = "Buttons",
+        options = list(
+          dom = "Bfrtip",
+          buttons = I("colvis"),
+          columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
+        )
+      ))
     }
   })
 }
