@@ -14,7 +14,7 @@ dataSourceTabPanelServer <- function(id, dataframes, columns_to_hide = NULL) {
           options = list(
             dom = "Bfrtip",
             buttons = I("colvis"),
-            columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
+            columnDefs = list(list(visible = FALSE, targets = columns_to_hide[[i]]))
           )
         ))
       })
@@ -34,13 +34,13 @@ getDataSourceTabPanelUIoutputs <- function(namespace, mainTabPanelValue) {
       "Data",
       br(),
       p("Data includes full and joint sharholders of enterprises.
-            If entity_type column is JOINT_OWNERS, means that under one record could be two o more owners of share.
+            If entity_type column is JOINT_OWNERS, means that under one record could be two or more owners of share.
             JOINT OWNERS could be matched by using id column of 'Enterprises shareholders' with member_id column of table 'Enterprises only joint owners'."),
       br(),
       h2("Enterprises shareholders"),
       DTOutput(ns("dt1")),
       p(),
-      h2("Enterprises only joint owners"),
+      h2("Only enterprises' joint owners"),
       p(),
       DTOutput(ns("dt2"))
     )

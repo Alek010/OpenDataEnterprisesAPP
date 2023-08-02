@@ -66,7 +66,10 @@ server <- function(input, output, session) {
   observeEvent({data$LlcShareholders; data$LlcShareholderJointOwners},
     dataSourceTabPanelServer(
       id = "EnterprisesOwnersData",
-      dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners))
+      dataframes = isolate(list(data$LlcShareholders, data$LlcShareholderJointOwners)),
+      columns_to_hide = list(c("id", "uri", "share_nominal_value", "share_currency",
+                               "date_from", "registered_on", "last_modified_at"),
+                             c("id", "member_id"))
     )
   )
 
@@ -82,8 +85,11 @@ server <- function(input, output, session) {
 
   filterDataframeTabPanelServer(
     id = "EnterprisesOwnersFilter",
-    object_data_frame = isolate(EnterprisesOwners$new(df_llc_shareholders = data$LlcShareholders,
-                                              df_llc_joint_shareholders = data$LlcShareholderJointOwners))
+    object_data_frame = isolate(EnterprisesOwners$new(
+      df_llc_shareholders = data$LlcShareholders,
+      df_llc_joint_shareholders = data$LlcShareholderJointOwners
+    )),
+    columns_to_hide = c("uri", "date_from", "registered_on", "last_modified_at")
   )
 
   observeEvent({data$files_read_log},
