@@ -13,7 +13,7 @@ dataSourceTabPanelServer <- function(id, dataframes, columns_to_hide = NULL) {
           extensions = "Buttons",
           options = list(
             dom = "Bfrtip",
-            buttons = I("colvis"),
+            buttons = list(list(extend ="colvis", text = "hide/unhide columns")),
             columnDefs = list(list(visible = FALSE, targets = columns_to_hide[[i]]))
           )
         ))

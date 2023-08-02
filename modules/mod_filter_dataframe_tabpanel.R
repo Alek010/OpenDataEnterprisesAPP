@@ -50,7 +50,7 @@ filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide
           extensions = "Buttons",
           options = list(
             dom = "Bfrtip",
-            buttons = I("colvis"),
+            buttons = list(list(extend ="colvis", text = "hide/unhide columns")),
             columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
           )
         )
@@ -95,7 +95,7 @@ filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide
                 extensions = "Buttons",
                 options = list(
                   dom = "Bfrtip",
-                  buttons = I("colvis"),
+                  buttons = list(list(extend ="colvis", text = "hide/unhide columns")),
                   columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
                 )
               )
