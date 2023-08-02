@@ -28,7 +28,7 @@ filterDataframeTabPanelUI <- function(id, mainTabPanelValue) {
   )
 }
 
-filterDataframeTabPanelServer <- function(id, object_data_frame) {
+filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide = NULL) {
   moduleServer(id, function(input, output, session) {
     filter_input_values <- reactiveVal(character(0))
 
@@ -44,7 +44,16 @@ filterDataframeTabPanelServer <- function(id, object_data_frame) {
         filter_values = filter_values
       )
 
-      output$dt <- DT::renderDataTable(filtered_df)
+      output$dt <- DT::renderDataTable(
+        DT::datatable(filtered_df,
+                      rownames = FALSE,
+                      extensions = 'Buttons',
+                      options = list(
+                        dom = 'Bfrtip',
+                        buttons = I('colvis'),
+                        columnDefs = list(list(visible=FALSE, targets=columns_to_hide))
+                      ))
+      )
 
       if (length(filter_input_values()) > 1) {
         values <- filter_input_values()
@@ -79,7 +88,17 @@ filterDataframeTabPanelServer <- function(id, object_data_frame) {
           local({
             local_df <- filtered_df_per_value[[i]]
 
-            output[[filter_values[i]]] <- DT::renderDataTable(local_df)
+            output[[filter_values[i]]] <- DT::renderDataTable(
+              DT::datatable(local_df,
+                            rownames = FALSE,
+                            extensions = 'Buttons',
+                            options = list(
+                              dom = 'Bfrtip',
+                              buttons = I('colvis'),
+                              columnDefs = list(list(visible=FALSE, targets=columns_to_hide))
+                            )
+                            )
+            )
           })
         }
       }
