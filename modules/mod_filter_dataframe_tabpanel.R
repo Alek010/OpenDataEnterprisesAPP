@@ -28,7 +28,7 @@ filterDataframeTabPanelUI <- function(id, mainTabPanelValue) {
   )
 }
 
-filterDataframeTabPanelServer <- function(id, object_data_frame) {
+filterDataframeTabPanelServer <- function(id, object_data_frame, columns_to_hide = NULL) {
   moduleServer(id, function(input, output, session) {
     filter_input_values <- reactiveVal(character(0))
 
@@ -38,13 +38,27 @@ filterDataframeTabPanelServer <- function(id, object_data_frame) {
 
       filter_values <- vectorize_input_text(input$filter_input_text)
 
+      if (identical(filter_values, character(0))) {
+        columns_to_hide <- NULL
+      }
+
       filtered_df <- filter_df_based_on_classname(
         r6_object_instance = object_instance,
         input_id = input$filter_radio,
         filter_values = filter_values
       )
 
-      output$dt <- DT::renderDataTable(filtered_df)
+      output$dt <- DT::renderDataTable(
+        DT::datatable(filtered_df,
+          rownames = FALSE,
+          extensions = "Buttons",
+          options = list(
+            dom = "Bfrtip",
+            buttons = list(list(extend ="colvis", text = "hide/unhide columns")),
+            columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
+          )
+        )
+      )
 
       if (length(filter_input_values()) > 1) {
         values <- filter_input_values()
@@ -79,7 +93,17 @@ filterDataframeTabPanelServer <- function(id, object_data_frame) {
           local({
             local_df <- filtered_df_per_value[[i]]
 
-            output[[filter_values[i]]] <- DT::renderDataTable(local_df)
+            output[[filter_values[i]]] <- DT::renderDataTable(
+              DT::datatable(local_df,
+                rownames = FALSE,
+                extensions = "Buttons",
+                options = list(
+                  dom = "Bfrtip",
+                  buttons = list(list(extend ="colvis", text = "hide/unhide columns")),
+                  columnDefs = list(list(visible = FALSE, targets = columns_to_hide))
+                )
+              )
+            )
           })
         }
       }
@@ -87,25 +111,24 @@ filterDataframeTabPanelServer <- function(id, object_data_frame) {
   })
 }
 
-getFilterDataFrameRadioButtonLabel = function(mainTabPanelValue){
-  label <- switch (mainTabPanelValue,
-                   "InsolvencyLegalPersonProceedings" = "Filter enterprise under insolvency proceeding",
-                   "EnterprisesOwners" = "Filter enterprise owners"
+getFilterDataFrameRadioButtonLabel <- function(mainTabPanelValue) {
+  label <- switch(mainTabPanelValue,
+    "InsolvencyLegalPersonProceedings" = "Filter enterprise under insolvency proceeding",
+    "EnterprisesOwners" = "Filter enterprise owners"
   )
   return(label)
 }
 
-getFilterDataFrameRadioButtonChoises = function(mainTabPanelValue){
-  choises_list <- switch (mainTabPanelValue,
-                          "InsolvencyLegalPersonProceedings" = list(
-                            "by enterprise registration number" = 1,
-                            "by enterprise name" = 2
-                          ),
-                          "EnterprisesOwners" = list(
-                            "by enterprise registration number" = 1,
-                            "by enterprise owner name" = 2
-                          )
-
+getFilterDataFrameRadioButtonChoises <- function(mainTabPanelValue) {
+  choises_list <- switch(mainTabPanelValue,
+    "InsolvencyLegalPersonProceedings" = list(
+      "by enterprise registration number" = 1,
+      "by enterprise name" = 2
+    ),
+    "EnterprisesOwners" = list(
+      "by enterprise registration number" = 1,
+      "by enterprise owner name" = 2
+    )
   )
   return(choises_list)
 }

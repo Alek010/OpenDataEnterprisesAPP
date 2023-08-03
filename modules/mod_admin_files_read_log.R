@@ -10,6 +10,14 @@ adminFilesReadLogTabPanelUI <- function(id) {
 
 adminFilesReadLogTabPanelServer <- function(id, df_read_log_summary) {
   moduleServer(id, function(input, output, session) {
-    output$dt <- DT::renderDT(df_read_log_summary)
+    output$dt <- DT::renderDT(
+      DT::datatable(df_read_log_summary,
+                    rownames = FALSE,
+                    options = list(
+                      columnDefs = list(list(className = 'dt-left', targets = "_all")),
+                      pageLength = 15,
+                      lengthMenu = c(15, 30, 50, 100)
+                    ))
+    )
   })
 }
