@@ -50,7 +50,18 @@ adminFilesUpdateTabPanelServer <- function(id, register, data) {
       data$files_read_log <- register$get_read_log_summary()
       data$files_download_log <- register$get_download_log_summary()
 
-      output$dt_download_log <- DT::renderDT(isolate(data$files_download_log))
+      output$dt_download_log <- DT::renderDT(
+        DT::datatable(isolate(data$files_download_log),
+                      rownames = FALSE,
+                      escape = FALSE,
+                      options = list(
+                        dom = "lp",
+                        pageLength = 15,
+                        lengthMenu = c(15, 30, 50, 100),
+                        order = list(list(1, "desc"))
+                      )
+                      )
+      )
 
       return(data)
 
