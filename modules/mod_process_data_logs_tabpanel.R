@@ -15,7 +15,7 @@ processDataLogsTabPanelServer <- function(id, datasource_processor) {
     processor <- datasource_processor
     processor$process_data()
 
-    df_log <<- processor$log_data %>% as.data.frame()
+    df_log <- processor$log_data %>% as.data.frame()
 
     output$dt <- DT::renderDT(
       DT::datatable(df_log,
