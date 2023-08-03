@@ -55,11 +55,11 @@ server <- function(input, output, session) {
     dataSourceTabPanelServer(
       id = "InsolvencyLegalPersonProceedingsData",
       dataframes = isolate(list(data$InsolvencyProceedings)),
-      columns_to_hide = c("proceeding_id", "debtor_cleaned_name", "proceeding_subtype", "proceeding_resolution_type",
+      columns_to_hide = list(c("proceeding_id", "debtor_cleaned_name", "proceeding_subtype", "proceeding_resolution_type",
                           "proceeding_resolution_name", "entry_created_on", "court_case_initial_number", "court_code",
                           "court_name", "creditor_applications_deadline_date", "creditor_applications_deadline_in_days",
                           "creditor_applications_deadline_in_weeks", "creditor_applications_deadline_in_months",
-                          "creditor_applications_deadline_in_years", "legislation_number", "legislation_version")
+                          "creditor_applications_deadline_in_years", "legislation_number", "legislation_version"))
     )
   )
 
@@ -76,11 +76,11 @@ server <- function(input, output, session) {
   filterDataframeTabPanelServer(
     id = "InsolvencyLegalPersonProceedingsFilter",
     object_data_frame = isolate(EnterprisesUnderInsolvencyProceeding$new(data$InsolvencyProceedings)),
-    columns_to_hide = c("proceeding_id", "debtor_cleaned_name", "proceeding_subtype", "proceeding_resolution_type",
+    columns_to_hide = list(c("proceeding_id", "debtor_cleaned_name", "proceeding_subtype", "proceeding_resolution_type",
                         "proceeding_resolution_name", "entry_created_on", "court_case_initial_number", "court_code",
                         "court_name", "creditor_applications_deadline_date", "creditor_applications_deadline_in_days",
                         "creditor_applications_deadline_in_weeks", "creditor_applications_deadline_in_months",
-                        "creditor_applications_deadline_in_years", "legislation_number", "legislation_version")
+                        "creditor_applications_deadline_in_years", "legislation_number", "legislation_version"))
   )
 
   filterDataframeTabPanelServer(
