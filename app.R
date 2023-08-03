@@ -19,7 +19,8 @@ ui <- fluidPage(
       tabsetPanel(
         type = "tabs",
         filterDataframeTabPanelUI(id = "EnterprisesOwnersFilter", mainTabPanelValue = "EnterprisesOwners"),
-        dataSourceTabPanelUI(id = "EnterprisesOwnersData", mainTabPanelValue = "EnterprisesOwners")
+        dataSourceTabPanelUI(id = "EnterprisesOwnersData", mainTabPanelValue = "EnterprisesOwners"),
+        processDataLogsTabPanelUI(id = "EnterpriseOwnersDataProcessingLogs")
       )
     ),
     "Admin",
@@ -102,6 +103,14 @@ server <- function(input, output, session) {
       df_llc_joint_shareholders = data$LlcShareholderJointOwners
     )),
     columns_to_hide = c("uri", "date_from", "registered_on", "last_modified_at")
+  )
+
+  processDataLogsTabPanelServer(
+    id = "EnterpriseOwnersDataProcessingLogs",
+    datasource_processor = isolate(EnterprisesOwners$new(
+      df_llc_shareholders = data$LlcShareholders,
+      df_llc_joint_shareholders = data$LlcShareholderJointOwners
+    ))
   )
 
   observeEvent(
